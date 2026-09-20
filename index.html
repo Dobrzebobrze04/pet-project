@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
   :root {
     --bg: #FAF9F6;
@@ -458,9 +459,12 @@
     "Стерилизована":   {ru:"Стерилизована",   uz:"Sterilizatsiya qilingan", en:"Neutered/spayed"}
   };
   const EMOJI_MAP = {"Кошка":"🐱","Собака":"🐶","Попугай":"🦜","Кролик":"🐰","Хомяк":"🐹","Другое":"🐾"};
-  const STORE_KEY = "vdr_listings_v1";
   const LANG_KEY = "vdr_lang";
   const THEME_KEY = "vdr_theme";
+
+  const SUPABASE_URL = "https://wcbovebabbxgsgoictee.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_vnxwYKcTZhAK6D6li4U8xA_bPeKQCX5";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const I18N = {
     ru: {
@@ -507,7 +511,9 @@
       contact: "Связаться",
       markPlaced: "Пометить как пристроено",
       toastPublished: "Объявление опубликовано!",
-      toastPlaced: "Отмечено как пристроено — спасибо!"
+      toastPlaced: "Отмечено как пристроено — спасибо!",
+      toastError: "Что-то пошло не так, попробуйте ещё раз",
+      loadError: "Не удалось загрузить объявления — проверьте соединение и обновите страницу"
     },
     uz: {
       brand: "Mehribon qo'llarga",
@@ -553,7 +559,9 @@
       contact: "Bog'lanish",
       markPlaced: "Uy topgan deb belgilash",
       toastPublished: "E'lon joylandi!",
-      toastPlaced: "Uy topgan deb belgilandi — rahmat!"
+      toastPlaced: "Uy topgan deb belgilandi — rahmat!",
+      toastError: "Nimadir xato ketdi, qayta urinib ko'ring",
+      loadError: "E'lonlarni yuklab bo'lmadi — internetni tekshirib, sahifani yangilang"
     },
     en: {
       brand: "Kind Hands",
@@ -599,7 +607,9 @@
       contact: "Contact",
       markPlaced: "Mark as placed",
       toastPublished: "Listing published!",
-      toastPlaced: "Marked as placed — thank you!"
+      toastPlaced: "Marked as placed — thank you!",
+      toastError: "Something went wrong, please try again",
+      loadError: "Couldn't load listings — check your connection and refresh"
     }
   };
 
@@ -623,28 +633,22 @@
     if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
   }
 
-  const seed = () => ([
-    {id: crypto.randomUUID(), name:"Мурка", type:"Кошка", age:"8 месяцев", district:"Чиланзар", health:"Стерилизована", note:"Очень ласковая, любит сидеть на руках. Приучена к лотку.", contact:"@murka_help", status:"active", urgent:false, photos:[], emoji:"🐱"},
-    {id: crypto.randomUUID(), name:"Барс", type:"Собака", age:"2 года", district:"Юнусабад", health:"Здоров", note:"Активный, дружелюбный, ладит с другими собаками. Знает базовые команды.", contact:"+998901234567", status:"active", urgent:true, photos:[], emoji:"🐕"},
-    {id: crypto.randomUUID(), name:"Соня", type:"Кошка", age:"3 месяца", district:"Мирзо-Улугбек", health:"Здорова", note:"Игривый котёнок, найдена во дворе. Ищет заботливую семью.", contact:"@sonya_cat", status:"active", urgent:false, photos:[], emoji:"🐈"},
-    {id: crypto.randomUUID(), name:"Рекс", type:"Собака", age:"1 год", district:"Мирабад", health:"Нужно лечение", note:"Спокойный пёс, восстанавливается после травмы лапы. Нужен дом с терпением.", contact:"@rex_tashkent", status:"active", urgent:true, photos:[], emoji:"🐶"},
-    {id: crypto.randomUUID(), name:"Луна", type:"Кошка", age:"1.5 года", district:"Яккасарай", health:"Стерилизована", note:"Пристроена на прошлой неделе, спасибо всем откликнувшимся!", contact:"@luna_found", status:"placed", urgent:false, photos:[], emoji:"🐱"},
-  ]);
-
-  function load(){
-    try {
-      const raw = localStorage.getItem(STORE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch(e){}
-    const s = seed();
-    save(s);
-    return s;
+  async function fetchListings(){
+    const { data, error } = await db.from('listings').select('*').order('created_at', { ascending: false });
+    if (error){ console.error(error); return null; }
+    return data;
   }
-  function save(list){
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch(e){}
+  async function insertListing(payload){
+    const { data, error } = await db.from('listings').insert(payload).select().single();
+    if (error){ console.error(error); return null; }
+    return data;
+  }
+  async function updateStatusRemote(id, status){
+    const { error } = await db.from('listings').update({ status }).eq('id', id);
+    return !error;
   }
 
-  let listings = load();
+  let listings = [];
   let pendingPhotos = [];
 
   function districtLabel(d){ return (DISTRICT_TR[d] && DISTRICT_TR[d][lang]) || d; }
@@ -871,12 +875,18 @@
 
     const markBtn = document.getElementById('markPlacedBtn');
     if (markBtn){
-      markBtn.onclick = () => {
-        l.status = 'placed';
-        save(listings);
-        render();
-        closeDetail();
-        showToast(t('toastPlaced'));
+      markBtn.onclick = async () => {
+        markBtn.disabled = true;
+        const ok = await updateStatusRemote(l.id, 'placed');
+        if (ok){
+          l.status = 'placed';
+          render();
+          closeDetail();
+          showToast(t('toastPlaced'));
+        } else {
+          markBtn.disabled = false;
+          showToast(t('toastError'));
+        }
       };
     }
   }
@@ -970,11 +980,11 @@
   }
   renderPhotoThumbs();
 
-  document.getElementById('addForm').addEventListener('submit', e => {
+  document.getElementById('addForm').addEventListener('submit', async e => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
     const type = document.getElementById('fType').value;
-    const newListing = {
-      id: crypto.randomUUID(),
+    const payload = {
       name: document.getElementById('fName').value.trim(),
       type,
       age: document.getElementById('fAge').value.trim(),
@@ -987,11 +997,17 @@
       photos: pendingPhotos.slice(),
       emoji: EMOJI_MAP[type] || "🐾"
     };
-    listings.unshift(newListing);
-    save(listings);
-    render();
-    closeAdd();
-    showToast(t('toastPublished'));
+    submitBtn.disabled = true;
+    const inserted = await insertListing(payload);
+    submitBtn.disabled = false;
+    if (inserted){
+      listings.unshift(inserted);
+      render();
+      closeAdd();
+      showToast(t('toastPublished'));
+    } else {
+      showToast(t('toastError'));
+    }
   });
 
   document.getElementById('filterDistrict').addEventListener('change', render);
@@ -1024,7 +1040,22 @@
   applyTheme();
   applyStaticI18n();
   populateSelects();
-  render();
+
+  async function init(){
+    document.getElementById('grid').innerHTML = '';
+    document.getElementById('emptyState').style.display = 'none';
+    const data = await fetchListings();
+    if (data === null){
+      const empty = document.getElementById('emptyState');
+      empty.querySelector('span').textContent = t('loadError');
+      empty.style.display = 'block';
+      showToast(t('loadError'));
+      return;
+    }
+    listings = data;
+    render();
+  }
+  init();
 })();
 </script>
 </body>
