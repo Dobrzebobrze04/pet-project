@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>В добрые руки — Ташкент</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF9F6;
+    --card-bg: #FFFFFF;
+    --green: #5B8C72;
+    --green-dark: #3E6350;
+    --green-deep: #2F4A3C;
+    --green-light: #E1EDE6;
+    --green-pale: #F1F6F3;
+    --text: #2B2B28;
+    --text-muted: #6E6E66;
+    --border: #E7E3DA;
+    --urgent: #C97B4A;
+    --radius-card: 18px;
+    --radius-btn: 10px;
+    --font-display: 'Unbounded', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1B1F1C;
+      --card-bg: #242923;
+      --text: #EDEDE7;
+      --text-muted: #A6A69C;
+      --border: #34382F;
+      --green-light: #2A3B31;
+      --green-pale: #202623;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1B1F1C;
+    --card-bg: #242923;
+    --text: #EDEDE7;
+    --text-muted: #A6A69C;
+    --border: #34382F;
+    --green-light: #2A3B31;
+    --green-pale: #202623;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+
+  a { color: inherit; }
+  button { font-family: inherit; cursor: pointer; }
+  button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--green); outline-offset: 2px;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--border);
+    background: var(--card-bg);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 18px; padding-bottom: 18px;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-size: 19px; }
+  .logo .mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--green-light); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .lang-switch {
+    display: flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden;
+  }
+  .lang-switch button {
+    border: none; background: transparent; color: var(--text-muted);
+    font-size: 12.5px; font-weight: 700; padding: 7px 12px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .lang-switch button.active { background: var(--green); color: white; }
+  .lang-switch button:not(.active):hover { background: var(--green-pale); color: var(--green-deep); }
+
+  .theme-toggle {
+    border: 1px solid var(--border); background: var(--card-bg); border-radius: 999px;
+    width: 36px; height: 36px; font-size: 15px; display: flex; align-items: center; justify-content: center;
+    transition: background .15s ease;
+  }
+  .theme-toggle:hover { background: var(--green-pale); }
+
+  .btn {
+    border: none; border-radius: var(--radius-btn);
+    padding: 11px 20px; font-size: 14.5px; font-weight: 600;
+    transition: transform .12s ease, background .15s ease;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-ghost { background: transparent; color: var(--green-deep); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--green-pale); }
+  .btn:active { transform: scale(0.97); }
+
+  /* Hero / intro strip */
+  .intro {
+    padding: 28px 0 8px;
+  }
+  .intro p {
+    color: var(--text-muted); font-size: 15.5px; max-width: 560px; margin: 6px 0 0;
+  }
+  .intro h1 { font-size: 22px; margin: 0; color: var(--green-deep); }
+
+  /* Filters */
+  .filters {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    padding: 18px 0 22px;
+  }
+  select {
+    border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+    border-radius: var(--radius-btn); padding: 9px 14px; font-size: 14px;
+    font-family: inherit; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236E6E66' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px; padding-bottom: 40px;
+  }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-card);
+    overflow: hidden; text-align: left; padding: 0; display: flex; flex-direction: column;
+    transition: border-color .15s ease;
+  }
+  .card:hover { border-color: var(--green); }
+  .card-photo {
+    aspect-ratio: 4/3; max-height: 190px; width: 100%; display: flex; align-items: center; justify-content: center;
+    font-size: 46px; position: relative;
+  }
+  .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .card-name { font-weight: 700; font-size: 16px; }
+  .card-meta { color: var(--text-muted); font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 6px 10px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 999px;
+    background: var(--green-light); color: var(--green-deep); width: fit-content;
+  }
+  .badge.placed { background: var(--border); color: var(--text-muted); }
+  .badge.urgent { background: #F6E4D6; color: var(--urgent); }
+  .card-more {
+    margin-top: auto; padding-top: 8px; font-size: 13.5px; font-weight: 600; color: var(--green-dark);
+    background: none; border: none; text-align: left; padding-left: 0;
+  }
+
+  .empty {
+    text-align: center; padding: 60px 20px; color: var(--text-muted);
+  }
+  .empty .mark { font-size: 40px; margin-bottom: 10px; }
+
+  /* Modal */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(20, 24, 20, 0.45);
+    display: none; align-items: flex-start; justify-content: center;
+    padding: 40px 16px; overflow-y: auto; z-index: 100;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--card-bg); border-radius: 20px; max-width: 480px; width: 100%;
+    padding: 26px; position: relative; margin: auto 0;
+  }
+  .modal-close {
+    position: absolute; top: 18px; right: 18px; background: var(--green-pale); border: none;
+    width: 30px; height: 30px; border-radius: 50%; font-size: 16px; color: var(--text-muted);
+  }
+  .modal h2 { font-size: 19px; margin: 0 0 4px; color: var(--green-deep); }
+  .modal .sub { color: var(--text-muted); font-size: 13.5px; margin: 0 0 18px; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .field input, .field select, .field textarea {
+    width: 100%; border: 1px solid var(--border); border-radius: var(--radius-btn);
+    padding: 10px 12px; font-size: 14.5px; font-family: inherit; background: var(--bg); color: var(--text);
+  }
+  .field textarea { resize: vertical; min-height: 64px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .photo-picker-wrap { margin-bottom: 14px; }
+  .photo-thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .photo-thumb {
+    width: 72px; height: 72px; border-radius: 12px; overflow: hidden; position: relative;
+    border: 1px solid var(--border);
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo-thumb-remove {
+    position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(20,24,20,0.65); color: white; border: none; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .photo-add-tile {
+    width: 72px; height: 72px; border-radius: 12px; border: 1.5px dashed var(--border);
+    display: flex; align-items: center; justify-content: center; color: var(--text-muted);
+    font-size: 22px; cursor: pointer; position: relative; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .photo-add-tile input {
+    position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .photo-hint { font-size: 12.5px; color: var(--text-muted); margin-top: 6px; }
+
+  .form-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .form-actions .btn { flex: 1; }
+
+  /* Detail modal — swipeable gallery */
+  .detail-photo {
+    aspect-ratio: 4/3; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    font-size: 64px; margin: 22px 0 16px; overflow: hidden; position: relative;
+  }
+  .gallery-track {
+    display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .gallery-track::-webkit-scrollbar { display: none; }
+  .gallery-track .slide {
+    flex: 0 0 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+  }
+  .gallery-track img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gallery-nav {
+    position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(20,24,20,0.5); color: white; border: none; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; z-index: 2;
+  }
+  .gallery-nav.prev { left: 10px; }
+  .gallery-nav.next { right: 10px; }
+  .gallery-dots {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 5px; z-index: 2;
+  }
+  .gallery-dots span {
+    width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.55);
+  }
+  .gallery-dots span.active { background: #fff; }
+  .detail-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; font-size: 14px; }
+  .detail-list div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  .detail-list span:first-child { color: var(--text-muted); }
+  .gallery-track img, .detail-photo > img { cursor: zoom-in; }
+
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(10,12,10,0.94);
+    display: none; z-index: 300;
+  }
+  .lightbox.open { display: block; }
+  .lightbox .gallery-track { height: 100%; }
+  .lightbox .gallery-track .slide { padding: 24px; box-sizing: border-box; cursor: default; }
+  .lightbox .gallery-track img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; touch-action: pan-x pinch-zoom; border-radius: 8px; cursor: default; }
+  .lightbox-close {
+    position: fixed; top: 18px; right: 18px; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); color: white; border: none; font-size: 18px; z-index: 301;
+  }
+  .detail-note { font-size: 14px; color: var(--text); background: var(--green-pale); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 24px 0; margin-top: 20px;
+    color: var(--text-muted); font-size: 13px; text-align: center;
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--green-deep); color: white; padding: 12px 20px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .25s ease;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .row2 { grid-template-columns: 1fr; }
+    .header-inner { padding-top: 14px; padding-bottom: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">
+      <div class="mark">🐾</div>
+      <div><strong class="display" data-i18n="brand">В добрые руки</strong></div>
+    </div>
+    <div class="header-right">
+      <div class="lang-switch" id="langSwitch">
+        <button data-lang="ru">РУ</button>
+        <button data-lang="uz">UZ</button>
+        <button data-lang="en">EN</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" type="button">☀️</button>
+      <button class="btn btn-primary" id="openAddBtn" data-i18n="addBtn">Разместить объявление</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <h1 data-i18n="heroTitle">Кошки и собаки Ташкента, которые ищут дом</h1>
+    <p data-i18n="heroSub">Доска объявлений о пристройстве бездомных животных — с фильтрами по району, чтобы забрать было проще.</p>
+  </div>
+
+  <div class="filters">
+    <select id="filterDistrict"></select>
+    <select id="filterType"></select>
+    <select id="filterStatus"></select>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="emptyState" style="display:none;">
+    <div class="mark">🐾</div>
+    <span data-i18n="emptyState">По этим фильтрам пока никого нет — попробуйте другой район или вид.</span>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div data-i18n="footer">Проект сделан в Ташкенте волонтёрами и небезразличными людьми. Это прототип — данные хранятся только в этом браузере.</div>
+    <div data-i18n="footerNonCommercial" style="margin-top:4px;">Проект сделан не для коммерческих целей.</div>
+  </div>
+</footer>
+
+<!-- Add listing modal -->
+<div class="overlay" id="addOverlay">
+  <div class="modal">
+    <button class="modal-close" id="closeAdd">✕</button>
+    <h2 data-i18n="modalTitle">Разместить объявление</h2>
+    <p class="sub" data-i18n="modalSub">Заполните карточку животного — это займёт минуту.</p>
+    <form id="addForm">
+      <div class="photo-picker-wrap">
+        <div class="photo-thumbs" id="photoThumbs">
+          <label class="photo-add-tile" id="photoAddTile">
+            <span>+</span>
+            <input type="file" accept="image/*" id="photoInput" multiple>
+          </label>
+        </div>
+        <div class="photo-hint" data-i18n="photoPicker">Загрузить фото (необязательно)</div>
+      </div>
+      <div class="field">
+        <label for="fName" data-i18n="labelName">Кличка</label>
+        <input type="text" id="fName" data-i18n-ph="phName" placeholder="Например, Барсик" required>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="fType" data-i18n="labelType">Вид</label>
+          <select id="fType" required></select>
+        </div>
+        <div class="field">
+          <label for="fAge" data-i18n="labelAge">Возраст</label>
+          <input type="text" id="fAge" data-i18n-ph="phAge" placeholder="Напр. 1 год" required>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="fDistrict" data-i18n="labelDistrict">Район</label>
+          <select id="fDistrict" required></select>
+        </div>
+        <div class="field">
+          <label for="fHealth" data-i18n="labelHealth">Состояние</label>
+          <select id="fHealth"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="fNote" data-i18n="labelNote">Пара слов о характере</label>
+        <textarea id="fNote" data-i18n-ph="phNote" placeholder="Ласковый, дружит с детьми, любит спать на солнце..."></textarea>
+      </div>
+      <div class="field">
+        <label for="fContact" data-i18n="labelContact">Ваш Telegram или телефон</label>
+        <input type="text" id="fContact" data-i18n-ph="phContact" placeholder="@username или +998..." required>
+      </div>
+      <div class="field" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <input type="checkbox" id="fUrgent" style="width:auto; margin:0;">
+        <label for="fUrgent" style="margin:0; font-weight:500; cursor:pointer;" data-i18n="labelUrgent">Срочно — животному грозит опасность или нужна помощь как можно скорее</label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="cancelAdd" data-i18n="cancel">Отмена</button>
+        <button type="submit" class="btn btn-primary" data-i18n="publish">Опубликовать</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Detail modal -->
+<div class="overlay" id="detailOverlay">
+  <div class="modal">
+    <button class="modal-close" id="closeDetail">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightboxOverlay">
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <div class="gallery-track" id="lightboxTrack"></div>
+  <button type="button" class="gallery-nav prev" id="lightboxPrev">‹</button>
+  <button type="button" class="gallery-nav next" id="lightboxNext">›</button>
+  <div class="gallery-dots" id="lightboxDots"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const DISTRICTS = ["Юнусабад","Мирзо-Улугбек","Чиланзар","Яккасарай","Мирабад","Шайхантахур","Сергели","Яшнобод","Учтепа","Бектемир","Алмазар","Янгихаёт"];
+  const DISTRICT_TR = {
+    "Юнусабад":       {ru:"Юнусабад",       uz:"Yunusobod",     en:"Yunusabad"},
+    "Мирзо-Улугбек":  {ru:"Мирзо-Улугбек",  uz:"Mirzo-Ulug'bek",en:"Mirzo-Ulugbek"},
+    "Чиланзар":       {ru:"Чиланзар",       uz:"Chilonzor",     en:"Chilanzar"},
+    "Яккасарай":      {ru:"Яккасарай",      uz:"Yakkasaroy",    en:"Yakkasaray"},
+    "Мирабад":        {ru:"Мирабад",        uz:"Mirobod",       en:"Mirabad"},
+    "Шайхантахур":    {ru:"Шайхантахур",    uz:"Shayxontohur",  en:"Shaykhantakhur"},
+    "Сергели":        {ru:"Сергели",        uz:"Sergeli",       en:"Sergeli"},
+    "Яшнобод":        {ru:"Яшнобод",        uz:"Yashnobod",     en:"Yashnabad"},
+    "Учтепа":         {ru:"Учтепа",         uz:"Uchtepa",       en:"Uchtepa"},
+    "Бектемир":       {ru:"Бектемир",       uz:"Bektemir",      en:"Bektemir"},
+    "Алмазар":        {ru:"Алмазар",        uz:"Olmazor",       en:"Almazar"},
+    "Янгихаёт":       {ru:"Янгихаёт",       uz:"Yangihayot",    en:"Yangihayot"}
+  };
+  const TYPES = ["Кошка","Собака","Попугай","Кролик","Хомяк","Другое"];
+  const TYPE_TR = {
+    "Кошка":   {ru:"Кошка",   uz:"Mushuk",  en:"Cat"},
+    "Собака":  {ru:"Собака",  uz:"It",      en:"Dog"},
+    "Попугай": {ru:"Попугай", uz:"To'tiqush",en:"Parrot"},
+    "Кролик":  {ru:"Кролик",  uz:"Quyon",   en:"Rabbit"},
+    "Хомяк":   {ru:"Хомяк",   uz:"Xomyak",  en:"Hamster"},
+    "Другое":  {ru:"Другое",  uz:"Boshqa",  en:"Other"}
+  };
+  const TYPE_PLURAL_TR = {
+    "Кошка":   {ru:"Кошки",   uz:"Mushuklar",  en:"Cats"},
+    "Собака":  {ru:"Собаки",  uz:"Itlar",      en:"Dogs"},
+    "Попугай": {ru:"Попугаи", uz:"To'tiqushlar",en:"Parrots"},
+    "Кролик":  {ru:"Кролики", uz:"Quyonlar",   en:"Rabbits"},
+    "Хомяк":   {ru:"Хомяки",  uz:"Xomyaklar",  en:"Hamsters"},
+    "Другое":  {ru:"Другое",  uz:"Boshqa",     en:"Other"}
+  };
+  const HEALTH_VALUES = ["Здоров(а)","Стерилизован(а)","Нужно лечение"];
+  const HEALTH_TR = {
+    "Здоров(а)":       {ru:"Здоров(а)",       uz:"Sog'lom",         en:"Healthy"},
+    "Стерилизован(а)": {ru:"Стерилизован(а)", uz:"Sterilizatsiya qilingan", en:"Neutered/spayed"},
+    "Нужно лечение":   {ru:"Нужно лечение",   uz:"Davolash kerak",  en:"Needs treatment"},
+    "Здоров":          {ru:"Здоров",          uz:"Sog'lom",         en:"Healthy"},
+    "Стерилизована":   {ru:"Стерилизована",   uz:"Sterilizatsiya qilingan", en:"Neutered/spayed"}
+  };
+  const EMOJI_MAP = {"Кошка":"🐱","Собака":"🐶","Попугай":"🦜","Кролик":"🐰","Хомяк":"🐹","Другое":"🐾"};
+  const STORE_KEY = "vdr_listings_v1";
+  const LANG_KEY = "vdr_lang";
+  const THEME_KEY = "vdr_theme";
+
+  const I18N = {
+    ru: {
+      brand: "В добрые руки",
+      addBtn: "Разместить объявление",
+      heroTitle: "Кошки и собаки Ташкента, которые ищут дом",
+      heroSub: "Доска объявлений о пристройстве бездомных животных — с фильтрами по району, чтобы забрать было проще.",
+      allDistricts: "Все районы",
+      anyType: "Любой вид",
+      statusActive: "Ищут дом",
+      statusAll: "Все статусы",
+      statusPlaced: "Уже пристроены",
+      emptyState: "По этим фильтрам пока никого нет — попробуйте другой район или вид.",
+      footer: "Проект сделан в Ташкенте волонтёрами и небезразличными людьми. Это прототип — данные хранятся только в этом браузере.",
+      footerNonCommercial: "Проект сделан не для коммерческих целей.",
+      modalTitle: "Разместить объявление",
+      modalSub: "Заполните карточку животного — это займёт минуту.",
+      photoPicker: "Загрузить фото (необязательно)",
+      labelName: "Кличка",
+      phName: "Например, Барсик",
+      labelType: "Вид",
+      labelAge: "Возраст",
+      phAge: "Напр. 1 год",
+      labelDistrict: "Район",
+      labelHealth: "Состояние",
+      labelNote: "Пара слов о характере",
+      phNote: "Ласковый, дружит с детьми, любит спать на солнце...",
+      labelContact: "Ваш Telegram или телефон",
+      phContact: "@username или +998...",
+      labelUrgent: "Срочно — животному грозит опасность или нужна помощь как можно скорее",
+      cancel: "Отмена",
+      publish: "Опубликовать",
+      more: "Подробнее →",
+      badgeActive: "Ищет дом",
+      badgePlaced: "Пристроен(а)",
+      badgeUrgent: "Срочно",
+      detailActive: "Ищет дом",
+      detailUrgent: "Срочно ищет дом",
+      detailPlaced: "Уже пристроен(а)",
+      dlType: "Вид",
+      dlAge: "Возраст",
+      dlDistrict: "Район",
+      dlHealth: "Состояние",
+      contact: "Связаться",
+      markPlaced: "Пометить как пристроено",
+      toastPublished: "Объявление опубликовано!",
+      toastPlaced: "Отмечено как пристроено — спасибо!"
+    },
+    uz: {
+      brand: "Mehribon qo'llarga",
+      addBtn: "E'lon joylash",
+      heroTitle: "Toshkentdagi uy topayotgan mushuk va itlar",
+      heroSub: "Egasiz hayvonlarni uy topishga yordam beruvchi e'lonlar doskasi — tuman bo'yicha filtrlar bilan, olib ketish osonroq bo'lsin.",
+      allDistricts: "Barcha tumanlar",
+      anyType: "Har qanday tur",
+      statusActive: "Uy izlamoqda",
+      statusAll: "Barcha holatlar",
+      statusPlaced: "Allaqachon uy topgan",
+      emptyState: "Ushbu filtrlar bo'yicha hozircha hech kim yo'q — boshqa tuman yoki turni sinab ko'ring.",
+      footer: "Loyiha Toshkentda volontyorlar va bee'tibor bo'lmagan odamlar tomonidan yaratilgan. Bu — prototip, ma'lumotlar faqat shu brauzerda saqlanadi.",
+      footerNonCommercial: "Loyiha tijorat maqsadida yaratilmagan.",
+      modalTitle: "E'lon joylash",
+      modalSub: "Hayvon kartochkasini to'ldiring — bu bir daqiqa vaqt oladi.",
+      photoPicker: "Rasm yuklash (ixtiyoriy)",
+      labelName: "Ismi",
+      phName: "Masalan, Barsik",
+      labelType: "Turi",
+      labelAge: "Yoshi",
+      phAge: "Masalan, 1 yosh",
+      labelDistrict: "Tuman",
+      labelHealth: "Holati",
+      labelNote: "Xarakteri haqida bir necha so'z",
+      phNote: "Mehribon, bolalar bilan yaxshi chiqadi, quyoshda uxlashni yaxshi ko'radi...",
+      labelContact: "Sizning Telegram yoki telefon raqamingiz",
+      phContact: "@username yoki +998...",
+      labelUrgent: "Shoshilinch — hayvonga xavf tug'ilgan yoki tezroq yordam kerak",
+      cancel: "Bekor qilish",
+      publish: "E'lon qilish",
+      more: "Batafsil →",
+      badgeActive: "Uy izlamoqda",
+      badgePlaced: "Uy topgan",
+      badgeUrgent: "Shoshilinch",
+      detailActive: "Uy izlamoqda",
+      detailUrgent: "Shoshilinch uy izlamoqda",
+      detailPlaced: "Allaqachon uy topgan",
+      dlType: "Turi",
+      dlAge: "Yoshi",
+      dlDistrict: "Tuman",
+      dlHealth: "Holati",
+      contact: "Bog'lanish",
+      markPlaced: "Uy topgan deb belgilash",
+      toastPublished: "E'lon joylandi!",
+      toastPlaced: "Uy topgan deb belgilandi — rahmat!"
+    },
+    en: {
+      brand: "Kind Hands",
+      addBtn: "Post a listing",
+      heroTitle: "Cats and dogs in Tashkent looking for a home",
+      heroSub: "A listings board for rehoming stray animals — filter by district to make pickup easier.",
+      allDistricts: "All districts",
+      anyType: "Any type",
+      statusActive: "Looking for a home",
+      statusAll: "All statuses",
+      statusPlaced: "Already placed",
+      emptyState: "No one matches these filters yet — try another district or type.",
+      footer: "Made in Tashkent by volunteers and people who care. This is a prototype — data is stored only in this browser.",
+      footerNonCommercial: "This project is not made for commercial purposes.",
+      modalTitle: "Post a listing",
+      modalSub: "Fill in the animal's card — it takes a minute.",
+      photoPicker: "Upload a photo (optional)",
+      labelName: "Name",
+      phName: "E.g. Barsik",
+      labelType: "Type",
+      labelAge: "Age",
+      phAge: "E.g. 1 year",
+      labelDistrict: "District",
+      labelHealth: "Health",
+      labelNote: "A few words about their character",
+      phNote: "Affectionate, good with kids, loves sunny spots...",
+      labelContact: "Your Telegram or phone number",
+      phContact: "@username or +998...",
+      labelUrgent: "Urgent — the animal is at risk or needs help as soon as possible",
+      cancel: "Cancel",
+      publish: "Publish",
+      more: "Details →",
+      badgeActive: "Looking for a home",
+      badgePlaced: "Placed",
+      badgeUrgent: "Urgent",
+      detailActive: "Looking for a home",
+      detailUrgent: "Urgently looking for a home",
+      detailPlaced: "Already placed",
+      dlType: "Type",
+      dlAge: "Age",
+      dlDistrict: "District",
+      dlHealth: "Health",
+      contact: "Contact",
+      markPlaced: "Mark as placed",
+      toastPublished: "Listing published!",
+      toastPlaced: "Marked as placed — thank you!"
+    }
+  };
+
+  let lang = (function(){
+    try { return localStorage.getItem(LANG_KEY) || "ru"; } catch(e){ return "ru"; }
+  })();
+
+  function t(key){ return I18N[lang][key] || I18N.ru[key] || key; }
+
+  let theme = (function(){
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      if (stored) return stored;
+    } catch(e){}
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  })();
+
+  function applyTheme(){
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+  }
+
+  const seed = () => ([
+    {id: crypto.randomUUID(), name:"Мурка", type:"Кошка", age:"8 месяцев", district:"Чиланзар", health:"Стерилизована", note:"Очень ласковая, любит сидеть на руках. Приучена к лотку.", contact:"@murka_help", status:"active", urgent:false, photos:[], emoji:"🐱"},
+    {id: crypto.randomUUID(), name:"Барс", type:"Собака", age:"2 года", district:"Юнусабад", health:"Здоров", note:"Активный, дружелюбный, ладит с другими собаками. Знает базовые команды.", contact:"+998901234567", status:"active", urgent:true, photos:[], emoji:"🐕"},
+    {id: crypto.randomUUID(), name:"Соня", type:"Кошка", age:"3 месяца", district:"Мирзо-Улугбек", health:"Здорова", note:"Игривый котёнок, найдена во дворе. Ищет заботливую семью.", contact:"@sonya_cat", status:"active", urgent:false, photos:[], emoji:"🐈"},
+    {id: crypto.randomUUID(), name:"Рекс", type:"Собака", age:"1 год", district:"Мирабад", health:"Нужно лечение", note:"Спокойный пёс, восстанавливается после травмы лапы. Нужен дом с терпением.", contact:"@rex_tashkent", status:"active", urgent:true, photos:[], emoji:"🐶"},
+    {id: crypto.randomUUID(), name:"Луна", type:"Кошка", age:"1.5 года", district:"Яккасарай", health:"Стерилизована", note:"Пристроена на прошлой неделе, спасибо всем откликнувшимся!", contact:"@luna_found", status:"placed", urgent:false, photos:[], emoji:"🐱"},
+  ]);
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e){}
+    const s = seed();
+    save(s);
+    return s;
+  }
+  function save(list){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch(e){}
+  }
+
+  let listings = load();
+  let pendingPhotos = [];
+
+  function districtLabel(d){ return (DISTRICT_TR[d] && DISTRICT_TR[d][lang]) || d; }
+  function typeLabel(ty){ return (TYPE_TR[ty] && TYPE_TR[ty][lang]) || ty; }
+  function typePluralLabel(ty){ return (TYPE_PLURAL_TR[ty] && TYPE_PLURAL_TR[ty][lang]) || ty; }
+  function healthLabel(h){ return (HEALTH_TR[h] && HEALTH_TR[h][lang]) || h; }
+
+  function populateSelects(){
+    const filterDistrict = document.getElementById('filterDistrict');
+    const fDistrict = document.getElementById('fDistrict');
+    const prevFilterDistrict = filterDistrict.value;
+    const prevFieldDistrict = fDistrict.value;
+    filterDistrict.innerHTML = '';
+    fDistrict.innerHTML = '';
+    const allOpt = document.createElement('option'); allOpt.value = ''; allOpt.textContent = t('allDistricts');
+    filterDistrict.appendChild(allOpt);
+    DISTRICTS.forEach(d => {
+      const o1 = document.createElement('option'); o1.value = d; o1.textContent = districtLabel(d);
+      filterDistrict.appendChild(o1);
+      const o2 = document.createElement('option'); o2.value = d; o2.textContent = districtLabel(d);
+      fDistrict.appendChild(o2);
+    });
+    if (prevFilterDistrict) filterDistrict.value = prevFilterDistrict;
+    if (prevFieldDistrict) fDistrict.value = prevFieldDistrict;
+
+    const filterType = document.getElementById('filterType');
+    const fType = document.getElementById('fType');
+    const prevFilterType = filterType.value;
+    const prevFieldType = fType.value;
+    filterType.innerHTML = '';
+    fType.innerHTML = '';
+    const anyOpt = document.createElement('option'); anyOpt.value = ''; anyOpt.textContent = t('anyType');
+    filterType.appendChild(anyOpt);
+    TYPES.forEach(ty => {
+      const o1 = document.createElement('option'); o1.value = ty; o1.textContent = typePluralLabel(ty);
+      filterType.appendChild(o1);
+      const o2 = document.createElement('option'); o2.value = ty; o2.textContent = typeLabel(ty);
+      fType.appendChild(o2);
+    });
+    if (prevFilterType) filterType.value = prevFilterType;
+    if (prevFieldType) fType.value = prevFieldType;
+
+    const filterStatus = document.getElementById('filterStatus');
+    const prevFilterStatus = filterStatus.value;
+    filterStatus.innerHTML = '';
+    const s1 = document.createElement('option'); s1.value = 'active'; s1.textContent = t('statusActive');
+    const s2 = document.createElement('option'); s2.value = ''; s2.textContent = t('statusAll');
+    const s3 = document.createElement('option'); s3.value = 'placed'; s3.textContent = t('statusPlaced');
+    filterStatus.appendChild(s1); filterStatus.appendChild(s2); filterStatus.appendChild(s3);
+    filterStatus.value = prevFilterStatus || 'active';
+
+    const fHealth = document.getElementById('fHealth');
+    const prevHealth = fHealth.value;
+    fHealth.innerHTML = '';
+    HEALTH_VALUES.forEach(h => {
+      const o = document.createElement('option'); o.value = h; o.textContent = healthLabel(h);
+      fHealth.appendChild(o);
+    });
+    if (prevHealth) fHealth.value = prevHealth;
+  }
+
+  function applyStaticI18n(){
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      el.placeholder = t(el.getAttribute('data-i18n-ph'));
+    });
+    document.querySelectorAll('#langSwitch button').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+  }
+
+  function cardColor(type){
+    return type === "Кошка" ? "var(--green-pale)" : "var(--green-light)";
+  }
+
+  function slidesHtml(photos){
+    return photos.map(p => `<div class="slide"><img src="${p}"></div>`).join('');
+  }
+  function dotsHtml(photos, activeIndex){
+    return photos.map((_, i) => `<span class="${i === activeIndex ? 'active' : ''}"></span>`).join('');
+  }
+  // Wires prev/next buttons + dot sync for a scroll-snap track; also jumps to startIndex without animating.
+  function wireTrack(track, dotsWrap, prevBtn, nextBtn, count, startIndex){
+    const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
+    const currentIndex = () => Math.round(track.scrollLeft / track.clientWidth);
+    const goTo = (i) => track.scrollTo({ left: track.clientWidth * Math.max(0, Math.min(count - 1, i)), behavior: 'smooth' });
+    if (prevBtn) prevBtn.onclick = () => goTo(currentIndex() - 1);
+    if (nextBtn) nextBtn.onclick = () => goTo(currentIndex() + 1);
+    track.addEventListener('scroll', () => {
+      const idx = currentIndex();
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    });
+    if (startIndex) requestAnimationFrame(() => { track.scrollLeft = track.clientWidth * startIndex; });
+  }
+
+  function render(){
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('emptyState');
+    const fDistrict = document.getElementById('filterDistrict').value;
+    const fType = document.getElementById('filterType').value;
+    const fStatus = document.getElementById('filterStatus').value;
+
+    const filtered = listings.filter(l => {
+      if (fDistrict && l.district !== fDistrict) return false;
+      if (fType && l.type !== fType) return false;
+      if (fStatus && l.status !== fStatus) return false;
+      return true;
+    }).sort((a,b) => (a.status === b.status ? 0 : a.status === 'active' ? -1 : 1));
+
+    grid.innerHTML = '';
+    if (filtered.length === 0){
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      filtered.forEach(l => grid.appendChild(renderCard(l)));
+    }
+  }
+
+  function renderCard(l){
+    const card = document.createElement('button');
+    card.className = 'card';
+    card.style.textAlign = 'left';
+    card.onclick = () => openDetail(l.id);
+
+    const photo = document.createElement('div');
+    photo.className = 'card-photo';
+    photo.style.background = cardColor(l.type);
+    if (l.photos && l.photos.length){
+      const img = document.createElement('img');
+      img.src = l.photos[0]; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover';
+      photo.appendChild(img);
+    } else {
+      photo.textContent = l.emoji || EMOJI_MAP[l.type] || "🐾";
+    }
+
+    const body = document.createElement('div');
+    body.className = 'card-body';
+
+    const badges = document.createElement('div');
+    badges.style.display = 'flex'; badges.style.gap = '6px'; badges.style.flexWrap = 'wrap';
+    if (l.status === 'placed'){
+      badges.innerHTML = `<span class="badge placed">${t('badgePlaced')}</span>`;
+    } else if (l.urgent){
+      badges.innerHTML = `<span class="badge urgent">${t('badgeUrgent')}</span>`;
+    } else {
+      badges.innerHTML = `<span class="badge">${t('badgeActive')}</span>`;
+    }
+
+    body.innerHTML = `
+      <div class="card-name">${escapeHtml(l.name)}</div>
+      <div class="card-meta"><span>${typeLabel(l.type)}</span><span>·</span><span>${escapeHtml(l.age)}</span></div>
+      <div class="card-meta">${districtLabel(l.district)}</div>
+    `;
+    body.appendChild(badges);
+    const more = document.createElement('div');
+    more.className = 'card-more';
+    more.textContent = t('more');
+    body.appendChild(more);
+
+    card.appendChild(photo);
+    card.appendChild(body);
+    return card;
+  }
+
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+
+  function openDetail(id){
+    const l = listings.find(x => x.id === id);
+    if (!l) return;
+    const content = document.getElementById('detailContent');
+    const photos = l.photos && l.photos.length ? l.photos : [];
+    let galleryHtml;
+    if (photos.length === 0){
+      galleryHtml = `<div class="detail-photo" style="background:${cardColor(l.type)}"><span>${l.emoji || '🐾'}</span></div>`;
+    } else if (photos.length === 1){
+      galleryHtml = `<div class="detail-photo" style="background:${cardColor(l.type)}"><img src="${photos[0]}"></div>`;
+    } else {
+      galleryHtml = `
+        <div class="detail-photo" style="background:${cardColor(l.type)}">
+          <div class="gallery-track" id="galleryTrack">${slidesHtml(photos)}</div>
+          <button type="button" class="gallery-nav prev" id="galleryPrev">‹</button>
+          <button type="button" class="gallery-nav next" id="galleryNext">›</button>
+          <div class="gallery-dots" id="galleryDots">${dotsHtml(photos, 0)}</div>
+        </div>`;
+    }
+    content.innerHTML = `
+      ${galleryHtml}
+      <h2>${escapeHtml(l.name)}</h2>
+      <p class="sub">${l.status === 'placed' ? t('detailPlaced') : (l.urgent ? t('detailUrgent') : t('detailActive'))}</p>
+      <div class="detail-list">
+        <div><span>${t('dlType')}</span><span>${typeLabel(l.type)}</span></div>
+        <div><span>${t('dlAge')}</span><span>${escapeHtml(l.age)}</span></div>
+        <div><span>${t('dlDistrict')}</span><span>${districtLabel(l.district)}</span></div>
+        <div><span>${t('dlHealth')}</span><span>${healthLabel(l.health)}</span></div>
+      </div>
+      ${l.note ? `<div class="detail-note">${escapeHtml(l.note)}</div>` : ''}
+      <div class="form-actions">
+        <a class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;display:block;" href="${l.contact.startsWith('@') ? 'https://t.me/'+l.contact.slice(1) : 'tel:'+l.contact}" target="_blank" rel="noopener">${t('contact')} (${escapeHtml(l.contact)})</a>
+      </div>
+      ${l.status !== 'placed' ? `<button class="btn btn-ghost" style="width:100%;margin-top:10px;" id="markPlacedBtn">${t('markPlaced')}</button>` : ''}
+    `;
+    document.getElementById('detailOverlay').classList.add('open');
+
+    document.querySelectorAll('#detailContent .detail-photo img').forEach((img, i) => {
+      img.addEventListener('click', () => openLightbox(photos, i));
+    });
+
+    if (photos.length > 1){
+      wireTrack(
+        document.getElementById('galleryTrack'),
+        document.getElementById('galleryDots'),
+        document.getElementById('galleryPrev'),
+        document.getElementById('galleryNext'),
+        photos.length, 0
+      );
+    }
+
+    const markBtn = document.getElementById('markPlacedBtn');
+    if (markBtn){
+      markBtn.onclick = () => {
+        l.status = 'placed';
+        save(listings);
+        render();
+        closeDetail();
+        showToast(t('toastPlaced'));
+      };
+    }
+  }
+
+  function closeDetail(){
+    document.getElementById('detailOverlay').classList.remove('open');
+    closeLightbox();
+  }
+
+  const lightbox = document.getElementById('lightboxOverlay');
+  const lightboxTrack = document.getElementById('lightboxTrack');
+  const lightboxDots = document.getElementById('lightboxDots');
+  const lightboxPrev = document.getElementById('lightboxPrev');
+  const lightboxNext = document.getElementById('lightboxNext');
+
+  function openLightbox(photos, startIndex){
+    if (!photos.length) return;
+    lightboxTrack.innerHTML = slidesHtml(photos);
+    const multi = photos.length > 1;
+    lightboxDots.innerHTML = multi ? dotsHtml(photos, startIndex) : '';
+    lightboxPrev.style.display = multi ? 'flex' : 'none';
+    lightboxNext.style.display = multi ? 'flex' : 'none';
+    lightbox.classList.add('open');
+    if (multi) wireTrack(lightboxTrack, lightboxDots, lightboxPrev, lightboxNext, photos.length, startIndex);
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lightboxTrack.innerHTML = '';
+  }
+  document.getElementById('lightboxClose').onclick = closeLightbox;
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+  document.getElementById('closeDetail').onclick = closeDetail;
+  document.getElementById('detailOverlay').addEventListener('click', e => {
+    if (e.target.id === 'detailOverlay') closeDetail();
+  });
+
+  // Add modal
+  const addOverlay = document.getElementById('addOverlay');
+  function openAdd(){ addOverlay.classList.add('open'); }
+  function closeAdd(){
+    addOverlay.classList.remove('open');
+    document.getElementById('addForm').reset();
+    pendingPhotos = [];
+    renderPhotoThumbs();
+  }
+  document.getElementById('openAddBtn').onclick = openAdd;
+  document.getElementById('closeAdd').onclick = closeAdd;
+  document.getElementById('cancelAdd').onclick = closeAdd;
+  addOverlay.addEventListener('click', e => { if (e.target.id === 'addOverlay') closeAdd(); });
+
+  function renderPhotoThumbs(){
+    const wrap = document.getElementById('photoThumbs');
+    wrap.innerHTML = '';
+    pendingPhotos.forEach((src, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'photo-thumb';
+      thumb.innerHTML = `<img src="${src}"><button type="button" class="photo-thumb-remove" data-idx="${i}">✕</button>`;
+      wrap.appendChild(thumb);
+    });
+    const addTile = document.createElement('label');
+    addTile.className = 'photo-add-tile';
+    addTile.innerHTML = `<span>+</span><input type="file" accept="image/*" id="photoInput" multiple>`;
+    wrap.appendChild(addTile);
+    bindPhotoInput();
+    wrap.querySelectorAll('.photo-thumb-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pendingPhotos.splice(Number(btn.getAttribute('data-idx')), 1);
+        renderPhotoThumbs();
+      });
+    });
+  }
+
+  function bindPhotoInput(){
+    const input = document.getElementById('photoInput');
+    if (!input) return;
+    input.addEventListener('change', () => {
+      const files = Array.from(input.files || []);
+      let remaining = files.length;
+      if (!remaining) return;
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          pendingPhotos.push(reader.result);
+          remaining -= 1;
+          if (remaining === 0) renderPhotoThumbs();
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  }
+  renderPhotoThumbs();
+
+  document.getElementById('addForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const type = document.getElementById('fType').value;
+    const newListing = {
+      id: crypto.randomUUID(),
+      name: document.getElementById('fName').value.trim(),
+      type,
+      age: document.getElementById('fAge').value.trim(),
+      district: document.getElementById('fDistrict').value,
+      health: document.getElementById('fHealth').value,
+      note: document.getElementById('fNote').value.trim(),
+      contact: document.getElementById('fContact').value.trim(),
+      status: 'active',
+      urgent: document.getElementById('fUrgent').checked,
+      photos: pendingPhotos.slice(),
+      emoji: EMOJI_MAP[type] || "🐾"
+    };
+    listings.unshift(newListing);
+    save(listings);
+    render();
+    closeAdd();
+    showToast(t('toastPublished'));
+  });
+
+  document.getElementById('filterDistrict').addEventListener('change', render);
+  document.getElementById('filterType').addEventListener('change', render);
+  document.getElementById('filterStatus').addEventListener('change', render);
+
+  document.getElementById('langSwitch').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-lang]');
+    if (!btn) return;
+    lang = btn.getAttribute('data-lang');
+    try { localStorage.setItem(LANG_KEY, lang); } catch(err){}
+    applyStaticI18n();
+    populateSelects();
+    render();
+  });
+
+  function showToast(msg){
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(THEME_KEY, theme); } catch(e){}
+    applyTheme();
+  });
+
+  applyTheme();
+  applyStaticI18n();
+  populateSelects();
+  render();
+})();
+</script>
+</body>
+</html>
