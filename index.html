@@ -102,6 +102,11 @@
   }
   .theme-toggle:hover { background: var(--green-pale); }
 
+  .user-chip { display: flex; align-items: center; gap: 8px; }
+  .user-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+  .user-chip .name { font-size: 13.5px; font-weight: 600; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .user-chip .logout-btn { background: none; border: none; color: var(--text-muted); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 0; }
+
   .btn {
     border: none; border-radius: var(--radius-btn);
     padding: 11px 20px; font-size: 14.5px; font-weight: 600;
@@ -307,6 +312,7 @@
         <button data-lang="en">EN</button>
       </div>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" type="button">☀️</button>
+      <div id="authSlot"></div>
       <button class="btn btn-primary" id="openAddBtn" data-i18n="addBtn">Разместить объявление</button>
     </div>
   </div>
@@ -466,6 +472,24 @@
   const SUPABASE_KEY = "sb_publishable_vnxwYKcTZhAK6D6li4U8xA_bPeKQCX5";
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  const TELEGRAM_BOT_USERNAME = "vdobrieruki_autorization_bot";
+  const AUTH_FN_URL = SUPABASE_URL + "/functions/v1/telegram-auth";
+  const MARK_PLACED_FN_URL = SUPABASE_URL + "/functions/v1/mark-listing-placed";
+  const SESSION_KEY = "vdr_session";
+
+  function getSession(){
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch(e){ return null; }
+  }
+  function setSession(user){
+    try { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); } catch(e){}
+  }
+  function clearSession(){
+    try { localStorage.removeItem(SESSION_KEY); } catch(e){}
+  }
+
   const I18N = {
     ru: {
       brand: "В добрые руки",
@@ -513,7 +537,10 @@
       toastPublished: "Объявление опубликовано!",
       toastPlaced: "Отмечено как пристроено — спасибо!",
       toastError: "Что-то пошло не так, попробуйте ещё раз",
-      loadError: "Не удалось загрузить объявления — проверьте соединение и обновите страницу"
+      loadError: "Не удалось загрузить объявления — проверьте соединение и обновите страницу",
+      loginRequired: "Чтобы разместить объявление, сначала войдите через Telegram",
+      logout: "Выйти",
+      markPlacedError: "Не удалось обновить статус, попробуйте снова"
     },
     uz: {
       brand: "Mehribon qo'llarga",
@@ -561,7 +588,10 @@
       toastPublished: "E'lon joylandi!",
       toastPlaced: "Uy topgan deb belgilandi — rahmat!",
       toastError: "Nimadir xato ketdi, qayta urinib ko'ring",
-      loadError: "E'lonlarni yuklab bo'lmadi — internetni tekshirib, sahifani yangilang"
+      loadError: "E'lonlarni yuklab bo'lmadi — internetni tekshirib, sahifani yangilang",
+      loginRequired: "E'lon joylash uchun avval Telegram orqali kiring",
+      logout: "Chiqish",
+      markPlacedError: "Holatni yangilab bo'lmadi, qayta urinib ko'ring"
     },
     en: {
       brand: "Kind Hands",
@@ -609,7 +639,10 @@
       toastPublished: "Listing published!",
       toastPlaced: "Marked as placed — thank you!",
       toastError: "Something went wrong, please try again",
-      loadError: "Couldn't load listings — check your connection and refresh"
+      loadError: "Couldn't load listings — check your connection and refresh",
+      loginRequired: "Please log in with Telegram first to post a listing",
+      logout: "Log out",
+      markPlacedError: "Couldn't update the status, please try again"
     }
   };
 
@@ -633,6 +666,54 @@
     if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
   }
 
+  // ---- Telegram auth ----
+  function renderAuthSlot(){
+    const slot = document.getElementById('authSlot');
+    const session = getSession();
+    if (session){
+      slot.innerHTML = `
+        <div class="user-chip">
+          ${session.photo_url ? `<img src="${session.photo_url}" alt="">` : ''}
+          <span class="name">${escapeHtml(session.first_name || session.username || 'Telegram')}</span>
+          <button class="logout-btn" id="logoutBtn">${t('logout')}</button>
+        </div>`;
+      document.getElementById('logoutBtn').onclick = () => {
+        clearSession();
+        renderAuthSlot();
+      };
+    } else {
+      slot.innerHTML = '';
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://telegram.org/js/telegram-widget.js?22';
+      script.setAttribute('data-telegram-login', TELEGRAM_BOT_USERNAME);
+      script.setAttribute('data-size', 'medium');
+      script.setAttribute('data-radius', '10');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+      script.setAttribute('data-request-access', 'write');
+      slot.appendChild(script);
+    }
+  }
+
+  window.onTelegramAuth = async function(tgUser){
+    try {
+      const res = await fetch(AUTH_FN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+        body: JSON.stringify(tgUser)
+      });
+      const json = await res.json();
+      if (!res.ok || json.error){
+        showToast(t('toastError'));
+        return;
+      }
+      setSession(json.user);
+      renderAuthSlot();
+    } catch(e){
+      showToast(t('toastError'));
+    }
+  };
+
   async function fetchListings(){
     const { data, error } = await db.from('listings').select('*').order('created_at', { ascending: false });
     if (error){ console.error(error); return null; }
@@ -642,10 +723,6 @@
     const { data, error } = await db.from('listings').insert(payload).select().single();
     if (error){ console.error(error); return null; }
     return data;
-  }
-  async function updateStatusRemote(id, status){
-    const { error } = await db.from('listings').update({ status }).eq('id', id);
-    return !error;
   }
 
   let listings = [];
@@ -876,16 +953,31 @@
     const markBtn = document.getElementById('markPlacedBtn');
     if (markBtn){
       markBtn.onclick = async () => {
+        const session = getSession();
+        if (!session){
+          showToast(t('loginRequired'));
+          return;
+        }
         markBtn.disabled = true;
-        const ok = await updateStatusRemote(l.id, 'placed');
-        if (ok){
-          l.status = 'placed';
-          render();
-          closeDetail();
-          showToast(t('toastPlaced'));
-        } else {
+        try {
+          const res = await fetch(MARK_PLACED_FN_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+            body: JSON.stringify({ listing_id: l.id, session_token: session.session_token })
+          });
+          const json = await res.json();
+          if (res.ok && json.success){
+            l.status = 'placed';
+            render();
+            closeDetail();
+            showToast(t('toastPlaced'));
+          } else {
+            markBtn.disabled = false;
+            showToast(t('markPlacedError'));
+          }
+        } catch(e){
           markBtn.disabled = false;
-          showToast(t('toastError'));
+          showToast(t('markPlacedError'));
         }
       };
     }
@@ -933,7 +1025,13 @@
     pendingPhotos = [];
     renderPhotoThumbs();
   }
-  document.getElementById('openAddBtn').onclick = openAdd;
+  document.getElementById('openAddBtn').onclick = () => {
+    if (!getSession()){
+      showToast(t('loginRequired'));
+      return;
+    }
+    openAdd();
+  };
   document.getElementById('closeAdd').onclick = closeAdd;
   document.getElementById('cancelAdd').onclick = closeAdd;
   addOverlay.addEventListener('click', e => { if (e.target.id === 'addOverlay') closeAdd(); });
@@ -982,6 +1080,11 @@
 
   document.getElementById('addForm').addEventListener('submit', async e => {
     e.preventDefault();
+    const session = getSession();
+    if (!session){
+      showToast(t('loginRequired'));
+      return;
+    }
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const type = document.getElementById('fType').value;
     const payload = {
@@ -995,7 +1098,8 @@
       status: 'active',
       urgent: document.getElementById('fUrgent').checked,
       photos: pendingPhotos.slice(),
-      emoji: EMOJI_MAP[type] || "🐾"
+      emoji: EMOJI_MAP[type] || "🐾",
+      owner_id: session.id
     };
     submitBtn.disabled = true;
     const inserted = await insertListing(payload);
@@ -1021,6 +1125,7 @@
     try { localStorage.setItem(LANG_KEY, lang); } catch(err){}
     applyStaticI18n();
     populateSelects();
+    renderAuthSlot();
     render();
   });
 
@@ -1040,6 +1145,7 @@
   applyTheme();
   applyStaticI18n();
   populateSelects();
+  renderAuthSlot();
 
   async function init(){
     document.getElementById('grid').innerHTML = '';
