@@ -3,11 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>В добрые руки — Ташкент</title>
+<title>В добрые руки — доска объявлений о пристройстве кошек и собак в Ташкенте</title>
+<meta name="description" content="Бесплатная доска объявлений о пристройстве бездомных кошек и собак в Ташкенте. Найдите питомца или разместите объявление — с фильтрами по району.">
+<meta property="og:title" content="В добрые руки — Ташкент">
+<meta property="og:description" content="Бесплатная доска объявлений о пристройстве бездомных кошек и собак в Ташкенте.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pet-home.uz/">
+<link rel="canonical" href="https://pet-home.uz/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
 <style>
   :root {
     --bg: #FAF9F6;
@@ -422,7 +428,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-(function(){
+document.addEventListener('DOMContentLoaded', function(){
   const DISTRICTS = ["Юнусабад","Мирзо-Улугбек","Чиланзар","Яккасарай","Мирабад","Шайхантахур","Сергели","Яшнобод","Учтепа","Бектемир","Алмазар","Янгихаёт"];
   const DISTRICT_TR = {
     "Юнусабад":       {ru:"Юнусабад",       uz:"Yunusobod",     en:"Yunusabad"},
@@ -1158,7 +1164,7 @@
     render();
   }
   init();
-})();
+});
 </script>
 </body>
 </html>
