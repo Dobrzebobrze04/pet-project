@@ -23,25 +23,27 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://wcbovebabbxgsgoictee.supabase.co">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
 <style>
   :root {
     color-scheme: light dark;
     --bg: #FAF9F6;
     --card-bg: #FFFFFF;
-    --green: #5B8C72;
-    --green-dark: #3E6350;
-    --green-deep: #2F4A3C;
-    --green-light: #E1EDE6;
-    --green-pale: #F1F6F3;
+    --green: #7FA88F;
+    --green-dark: #4A6D5C;
+    --green-deep: #3D5A4C;
+    --green-light: #EAF2EC;
+    --green-pale: #F4F9F6;
+    --accent: #E0845F;
+    --accent-dark: #B85F3D;
     --text: #2B2B28;
     --text-muted: #6E6E66;
     --border: #E7E3DA;
-    --urgent: #C97B4A;
+    --urgent: #B85F3D;
     --radius-card: 18px;
     --radius-btn: 10px;
-    --font-display: 'Unbounded', system-ui, sans-serif;
+    --font-display: 'Manrope', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
@@ -51,8 +53,8 @@
       --text: #EDEDE7;
       --text-muted: #A6A69C;
       --border: #34382F;
-      --green-light: #2A3B31;
-      --green-pale: #202623;
+      --green-light: #2C3A32;
+      --green-pale: #212823;
     }
   }
   :root[data-theme="dark"] {
@@ -62,8 +64,8 @@
     --text: #EDEDE7;
     --text-muted: #A6A69C;
     --border: #34382F;
-    --green-light: #2A3B31;
-    --green-pale: #202623;
+    --green-light: #2C3A32;
+    --green-pale: #212823;
   }
   :root[data-theme="light"] {
     color-scheme: light;
@@ -77,13 +79,17 @@
     font-family: var(--font-body);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    transition: background-color .3s ease, color .3s ease;
   }
-  h1, h2, h3, .display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+  body, header, footer, .lang-switch, .filters select, .badge {
+    transition: background-color .3s ease, color .3s ease, border-color .3s ease;
+  }
+  h1, h2, h3, .display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
 
   a { color: inherit; }
   button { font-family: inherit; cursor: pointer; }
   button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
-    outline: 2px solid var(--green); outline-offset: 2px;
+    outline: 2px solid var(--accent); outline-offset: 2px;
   }
 
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
@@ -114,7 +120,7 @@
     font-size: 12.5px; font-weight: 700; padding: 7px 12px;
     transition: background .15s ease, color .15s ease;
   }
-  .lang-switch button.active { background: var(--green); color: white; }
+  .lang-switch button.active { background: var(--accent); color: white; }
   .lang-switch button:not(.active):hover { background: var(--green-pale); color: var(--green-deep); }
 
   .theme-toggle {
@@ -123,6 +129,8 @@
     transition: background .15s ease;
   }
   .theme-toggle:hover { background: var(--green-pale); }
+  .theme-toggle span { display: inline-block; transition: transform .35s ease; }
+  .theme-toggle.spin span { transform: rotate(180deg); }
 
   .user-chip { display: flex; align-items: center; gap: 8px; }
   .user-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
@@ -134,13 +142,19 @@
   .btn {
     border: none; border-radius: var(--radius-btn);
     padding: 11px 20px; font-size: 14.5px; font-weight: 600;
-    transition: transform .12s ease, background .15s ease;
+    transition: transform .12s ease, background .15s ease, box-shadow .2s ease;
   }
-  .btn-primary { background: var(--green); color: white; }
-  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-dark); }
   .btn-ghost { background: transparent; color: var(--green-deep); border: 1px solid var(--border); }
   .btn-ghost:hover { background: var(--green-pale); }
   .btn:active { transform: scale(0.97); }
+  @keyframes ctaPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(224,132,95,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(224,132,95,0); }
+  }
+  #openAddBtn { animation: ctaPulse 2.6s ease-in-out infinite; }
+  #openAddBtn:hover { animation: none; }
 
   /* Hero / intro strip */
   .intro {
@@ -172,13 +186,21 @@
   .card {
     background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-card);
     overflow: hidden; text-align: left; padding: 0; display: flex; flex-direction: column;
-    transition: border-color .15s ease;
+    transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease, background-color .3s ease;
+    opacity: 0; transform: translateY(10px);
+    animation: cardIn .45s ease forwards;
   }
-  .card:hover { border-color: var(--green); }
+  @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+  .card:hover {
+    border-color: var(--accent); transform: translateY(-4px);
+    box-shadow: 0 10px 24px -12px rgba(20,30,24,0.25);
+  }
   .card-photo {
     aspect-ratio: 4/3; max-height: 190px; width: 100%; display: flex; align-items: center; justify-content: center;
-    font-size: 46px; position: relative;
+    font-size: 46px; position: relative; overflow: hidden;
   }
+  .card-photo img { transition: transform .35s ease; }
+  .card:hover .card-photo img { transform: scale(1.06); }
   .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
   .card-name { font-weight: 700; font-size: 16px; }
   .card-meta { color: var(--text-muted); font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 6px 10px; }
@@ -190,7 +212,7 @@
   .badge.placed { background: var(--border); color: var(--text-muted); }
   .badge.urgent { background: #F6E4D6; color: var(--urgent); }
   .card-more {
-    margin-top: auto; padding-top: 8px; font-size: 13.5px; font-weight: 600; color: var(--green-dark);
+    margin-top: auto; padding-top: 8px; font-size: 13.5px; font-weight: 600; color: var(--accent-dark);
     background: none; border: none; text-align: left; padding-left: 0;
   }
 
@@ -206,12 +228,17 @@
     position: fixed; inset: 0; background: rgba(20, 24, 20, 0.45);
     display: none; align-items: flex-start; justify-content: center;
     padding: 40px 16px; overflow-y: auto; z-index: 100;
+    opacity: 0; transition: opacity .18s ease;
   }
   .overlay.open { display: flex; }
+  .overlay.open.show { opacity: 1; }
   .modal {
     background: var(--card-bg); border-radius: 20px; max-width: 480px; width: 100%;
     padding: 26px; position: relative; margin: auto 0;
+    transform: translateY(14px) scale(0.98); opacity: 0;
+    transition: transform .2s ease, opacity .2s ease, background-color .3s ease;
   }
+  .overlay.open.show .modal { transform: translateY(0) scale(1); opacity: 1; }
   .modal-close {
     position: absolute; top: 18px; right: 18px; background: var(--green-pale); border: none;
     width: 30px; height: 30px; border-radius: 50%; font-size: 16px; color: var(--text-muted);
@@ -310,12 +337,20 @@
   }
 
   .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px) scale(0.9);
     background: var(--green-deep); color: white; padding: 12px 20px; border-radius: 999px;
-    font-size: 13.5px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .25s ease;
+    font-size: 13.5px; font-weight: 600; opacity: 0; pointer-events: none;
+    transition: opacity .2s ease, transform .35s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 200;
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .card:hover, .card-photo img, .overlay, .modal, .loading-paw, .toast, #openAddBtn, .theme-toggle span {
+      animation: none !important; transition: none !important;
+    }
+    .card { opacity: 1; transform: none; }
+  }
 
   @media (max-width: 480px) {
     .row2 { grid-template-columns: 1fr; }
@@ -337,7 +372,7 @@
         <button data-lang="uz">UZ</button>
         <button data-lang="en">EN</button>
       </div>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" type="button">☀️</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" type="button"><span>☀️</span></button>
       <div id="authSlot"></div>
       <button class="btn btn-primary" id="openAddBtn" data-i18n="addBtn">Разместить объявление</button>
     </div>
@@ -412,6 +447,10 @@
           <label for="fHealth" data-i18n="labelHealth">Состояние</label>
           <select id="fHealth"></select>
         </div>
+      </div>
+      <div class="field">
+        <label for="fSex" data-i18n="labelSex">Пол</label>
+        <select id="fSex" required></select>
       </div>
       <div class="field">
         <label for="fNote" data-i18n="labelNote">Пара слов о характере</label>
@@ -493,6 +532,11 @@ document.addEventListener('DOMContentLoaded', function(){
     "Здоров":          {ru:"Здоров",          uz:"Sog'lom",         en:"Healthy"},
     "Стерилизована":   {ru:"Стерилизована",   uz:"Sterilizatsiya qilingan", en:"Neutered/spayed"}
   };
+  const SEX_VALUES = ["Самец","Самка"];
+  const SEX_TR = {
+    "Самец": {ru:"Самец", uz:"Erkak", en:"Male"},
+    "Самка": {ru:"Самка", uz:"Urg'ochi", en:"Female"}
+  };
   const EMOJI_MAP = {"Кошка":"🐱","Собака":"🐶","Попугай":"🦜","Кролик":"🐰","Хомяк":"🐹","Другое":"🐾"};
   const LANG_KEY = "vdr_lang";
   const THEME_KEY = "vdr_theme";
@@ -524,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function(){
       brand: "В добрые руки",
       addBtn: "Разместить объявление",
       heroTitle: "Кошки и собаки Ташкента, которые ищут дом",
-      heroSub: "Доска объявлений о пристройстве бездомных животных — с фильтрами по району, чтобы забрать было проще.",
+      heroSub: "Кошки и собаки Ташкента ищут дом — найдите своего или помогите найти его им.",
       allDistricts: "Все районы",
       anyType: "Любой вид",
       statusActive: "Ищут дом",
@@ -543,6 +587,7 @@ document.addEventListener('DOMContentLoaded', function(){
       phAge: "Напр. 1 год",
       labelDistrict: "Район",
       labelHealth: "Состояние",
+      labelSex: "Пол",
       labelNote: "Пара слов о характере",
       phNote: "Ласковый, дружит с детьми, любит спать на солнце...",
       labelContact: "Ваш Telegram или телефон",
@@ -561,6 +606,7 @@ document.addEventListener('DOMContentLoaded', function(){
       dlAge: "Возраст",
       dlDistrict: "Район",
       dlHealth: "Состояние",
+      dlSex: "Пол",
       contact: "Связаться",
       markPlaced: "Пометить как пристроено",
       toastPublished: "Объявление опубликовано!",
@@ -575,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function(){
       brand: "Mehribon qo'llarga",
       addBtn: "E'lon joylash",
       heroTitle: "Toshkentdagi uy topayotgan mushuk va itlar",
-      heroSub: "Egasiz hayvonlarni uy topishga yordam beruvchi e'lonlar doskasi — tuman bo'yicha filtrlar bilan, olib ketish osonroq bo'lsin.",
+      heroSub: "Toshkentdagi mushuk va itlar uy izlamoqda — o'zingiznikini toping yoki ularga uy topishga yordam bering.",
       allDistricts: "Barcha tumanlar",
       anyType: "Har qanday tur",
       statusActive: "Uy izlamoqda",
@@ -594,6 +640,7 @@ document.addEventListener('DOMContentLoaded', function(){
       phAge: "Masalan, 1 yosh",
       labelDistrict: "Tuman",
       labelHealth: "Holati",
+      labelSex: "Jinsi",
       labelNote: "Xarakteri haqida bir necha so'z",
       phNote: "Mehribon, bolalar bilan yaxshi chiqadi, quyoshda uxlashni yaxshi ko'radi...",
       labelContact: "Sizning Telegram yoki telefon raqamingiz",
@@ -612,6 +659,7 @@ document.addEventListener('DOMContentLoaded', function(){
       dlAge: "Yoshi",
       dlDistrict: "Tuman",
       dlHealth: "Holati",
+      dlSex: "Jinsi",
       contact: "Bog'lanish",
       markPlaced: "Uy topgan deb belgilash",
       toastPublished: "E'lon joylandi!",
@@ -626,7 +674,7 @@ document.addEventListener('DOMContentLoaded', function(){
       brand: "Kind Hands",
       addBtn: "Post a listing",
       heroTitle: "Cats and dogs in Tashkent looking for a home",
-      heroSub: "A listings board for rehoming stray animals — filter by district to make pickup easier.",
+      heroSub: "Cats and dogs in Tashkent are looking for a home — find yours, or help them find theirs.",
       allDistricts: "All districts",
       anyType: "Any type",
       statusActive: "Looking for a home",
@@ -645,6 +693,7 @@ document.addEventListener('DOMContentLoaded', function(){
       phAge: "E.g. 1 year",
       labelDistrict: "District",
       labelHealth: "Health",
+      labelSex: "Sex",
       labelNote: "A few words about their character",
       phNote: "Affectionate, good with kids, loves sunny spots...",
       labelContact: "Your Telegram or phone number",
@@ -663,6 +712,7 @@ document.addEventListener('DOMContentLoaded', function(){
       dlAge: "Age",
       dlDistrict: "District",
       dlHealth: "Health",
+      dlSex: "Sex",
       contact: "Contact",
       markPlaced: "Mark as placed",
       toastPublished: "Listing published!",
@@ -692,7 +742,10 @@ document.addEventListener('DOMContentLoaded', function(){
   function applyTheme(){
     document.documentElement.setAttribute('data-theme', theme);
     const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+    if (btn){
+      const span = btn.querySelector('span');
+      if (span) span.textContent = theme === 'dark' ? '🌙' : '☀️';
+    }
   }
 
   // ---- Telegram auth ----
@@ -761,6 +814,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function typeLabel(ty){ return (TYPE_TR[ty] && TYPE_TR[ty][lang]) || ty; }
   function typePluralLabel(ty){ return (TYPE_PLURAL_TR[ty] && TYPE_PLURAL_TR[ty][lang]) || ty; }
   function healthLabel(h){ return (HEALTH_TR[h] && HEALTH_TR[h][lang]) || h; }
+  function sexLabel(s){ return (SEX_TR[s] && SEX_TR[s][lang]) || s; }
 
   function populateSelects(){
     const filterDistrict = document.getElementById('filterDistrict');
@@ -814,6 +868,15 @@ document.addEventListener('DOMContentLoaded', function(){
       fHealth.appendChild(o);
     });
     if (prevHealth) fHealth.value = prevHealth;
+
+    const fSex = document.getElementById('fSex');
+    const prevSex = fSex.value;
+    fSex.innerHTML = '';
+    SEX_VALUES.forEach(s => {
+      const o = document.createElement('option'); o.value = s; o.textContent = sexLabel(s);
+      fSex.appendChild(o);
+    });
+    if (prevSex) fSex.value = prevSex;
   }
 
   function applyStaticI18n(){
@@ -827,6 +890,14 @@ document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('#langSwitch button').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
+  }
+
+  function openOverlay(el){
+    el.classList.add('open');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  }
+  function closeOverlay(el){
+    el.classList.remove('open', 'show');
   }
 
   function cardColor(type){
@@ -872,7 +943,11 @@ document.addEventListener('DOMContentLoaded', function(){
       empty.style.display = 'block';
     } else {
       empty.style.display = 'none';
-      filtered.forEach(l => grid.appendChild(renderCard(l)));
+      filtered.forEach((l, i) => {
+        const card = renderCard(l);
+        card.style.animationDelay = Math.min(i * 40, 320) + 'ms';
+        grid.appendChild(card);
+      });
     }
   }
 
@@ -908,7 +983,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     body.innerHTML = `
       <div class="card-name">${escapeHtml(l.name)}</div>
-      <div class="card-meta"><span>${typeLabel(l.type)}</span><span>·</span><span>${escapeHtml(l.age)}</span></div>
+      <div class="card-meta"><span>${typeLabel(l.type)}</span><span>·</span><span>${escapeHtml(l.age)}</span>${l.sex ? `<span>·</span><span>${sexLabel(l.sex)}</span>` : ''}</div>
       <div class="card-meta">${districtLabel(l.district)}</div>
     `;
     body.appendChild(badges);
@@ -953,6 +1028,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <p class="sub">${l.status === 'placed' ? t('detailPlaced') : (l.urgent ? t('detailUrgent') : t('detailActive'))}</p>
       <div class="detail-list">
         <div><span>${t('dlType')}</span><span>${typeLabel(l.type)}</span></div>
+        ${l.sex ? `<div><span>${t('dlSex')}</span><span>${sexLabel(l.sex)}</span></div>` : ''}
         <div><span>${t('dlAge')}</span><span>${escapeHtml(l.age)}</span></div>
         <div><span>${t('dlDistrict')}</span><span>${districtLabel(l.district)}</span></div>
         <div><span>${t('dlHealth')}</span><span>${healthLabel(l.health)}</span></div>
@@ -963,7 +1039,7 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
       ${l.status !== 'placed' ? `<button class="btn btn-ghost" style="width:100%;margin-top:10px;" id="markPlacedBtn">${t('markPlaced')}</button>` : ''}
     `;
-    document.getElementById('detailOverlay').classList.add('open');
+    openOverlay(document.getElementById('detailOverlay'));
 
     document.querySelectorAll('#detailContent .detail-photo img').forEach((img, i) => {
       img.addEventListener('click', () => openLightbox(photos, i));
@@ -1013,7 +1089,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function closeDetail(){
-    document.getElementById('detailOverlay').classList.remove('open');
+    closeOverlay(document.getElementById('detailOverlay'));
     closeLightbox();
   }
 
@@ -1030,11 +1106,11 @@ document.addEventListener('DOMContentLoaded', function(){
     lightboxDots.innerHTML = multi ? dotsHtml(photos, startIndex) : '';
     lightboxPrev.style.display = multi ? 'flex' : 'none';
     lightboxNext.style.display = multi ? 'flex' : 'none';
-    lightbox.classList.add('open');
+    openOverlay(lightbox);
     if (multi) wireTrack(lightboxTrack, lightboxDots, lightboxPrev, lightboxNext, photos.length, startIndex);
   }
   function closeLightbox(){
-    lightbox.classList.remove('open');
+    closeOverlay(lightbox);
     lightboxTrack.innerHTML = '';
   }
   document.getElementById('lightboxClose').onclick = closeLightbox;
@@ -1047,9 +1123,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // Add modal
   const addOverlay = document.getElementById('addOverlay');
-  function openAdd(){ addOverlay.classList.add('open'); }
+  function openAdd(){ openOverlay(addOverlay); }
   function closeAdd(){
-    addOverlay.classList.remove('open');
+    closeOverlay(addOverlay);
     document.getElementById('addForm').reset();
     pendingPhotos = [];
     renderPhotoThumbs();
@@ -1122,6 +1198,7 @@ document.addEventListener('DOMContentLoaded', function(){
       age: document.getElementById('fAge').value.trim(),
       district: document.getElementById('fDistrict').value,
       health: document.getElementById('fHealth').value,
+      sex: document.getElementById('fSex').value,
       note: document.getElementById('fNote').value.trim(),
       contact: document.getElementById('fContact').value.trim(),
       status: 'active',
@@ -1165,9 +1242,10 @@ document.addEventListener('DOMContentLoaded', function(){
     setTimeout(() => el.classList.remove('show'), 2200);
   }
 
-  document.getElementById('themeToggle').addEventListener('click', () => {
+  document.getElementById('themeToggle').addEventListener('click', function(){
     theme = theme === 'dark' ? 'light' : 'dark';
     try { localStorage.setItem(THEME_KEY, theme); } catch(e){}
+    this.classList.toggle('spin');
     applyTheme();
   });
 
